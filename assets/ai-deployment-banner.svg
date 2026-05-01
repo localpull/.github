@@ -88,12 +88,12 @@
   </g>
 
   <g transform="translate(118 118)">
-    <rect x="0" y="0" width="176" height="34" rx="17" fill="#09111F" stroke="#00E5FF" opacity="0.85"/>
-    <text x="20" y="22" fill="#B8F7FF" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="14" letter-spacing="1.2">AI-NATIVE DELIVERY</text>
+    <rect x="0" y="0" width="160" height="34" rx="17" fill="#09111F" stroke="#00E5FF" opacity="0.85"/>
+    <text x="80" y="22" text-anchor="middle" fill="#B8F7FF" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="13" letter-spacing="1">AI DEPLOYMENT</text>
 
     <text x="0" y="92" fill="#F8FAFC" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="54" font-weight="700">Reibungslose Bereitstellung</text>
     <text x="0" y="156" fill="#F8FAFC" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="54" font-weight="700">für das KI-Zeitalter</text>
-    <text x="0" y="206" fill="#9FB2D4" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="22">AI-native platforms, cloud automation, and production-grade deployment flows.</text>
+    <text x="0" y="206" fill="#9FB2D4" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="22">AI platforms, cloud automation, and production-grade deployment flows.</text>
 
     <g transform="translate(0 248)">
       <rect x="0" y="0" width="130" height="38" rx="19" fill="#0F172A" stroke="#00E5FF"/>
