@@ -1,0 +1,173 @@
+<svg width="1600" height="520" viewBox="0 0 1600 520" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Reibungslose Bereitstellung für das KI-Zeitalter</title>
+  <desc id="desc">An animated neon banner featuring AI, cloud deployment, and platform engineering motifs.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1600" y2="520" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#050816"/>
+      <stop offset="0.52" stop-color="#0B1023"/>
+      <stop offset="1" stop-color="#130B24"/>
+    </linearGradient>
+    <radialGradient id="glowCyan" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(260 150) rotate(18) scale(360 240)">
+      <stop stop-color="#00E5FF" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#00E5FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowViolet" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1280 340) rotate(-18) scale(340 240)">
+      <stop stop-color="#8B5CF6" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#8B5CF6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="line" x1="560" y1="130" x2="1380" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00E5FF"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="chip" x1="1200" y1="190" x2="1350" y2="330" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00E5FF"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="20"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="520" rx="32" fill="url(#bg)"/>
+  <rect width="1600" height="520" rx="32" fill="url(#glowCyan)"/>
+  <rect width="1600" height="520" rx="32" fill="url(#glowViolet)"/>
+
+  <g opacity="0.16" stroke="#7DD3FC" stroke-width="1">
+    <path d="M0 72H1600"/>
+    <path d="M0 132H1600"/>
+    <path d="M0 192H1600"/>
+    <path d="M0 252H1600"/>
+    <path d="M0 312H1600"/>
+    <path d="M0 372H1600"/>
+    <path d="M0 432H1600"/>
+    <path d="M120 0V520"/>
+    <path d="M280 0V520"/>
+    <path d="M440 0V520"/>
+    <path d="M600 0V520"/>
+    <path d="M760 0V520"/>
+    <path d="M920 0V520"/>
+    <path d="M1080 0V520"/>
+    <path d="M1240 0V520"/>
+    <path d="M1400 0V520"/>
+  </g>
+
+  <g filter="url(#soft)" opacity="0.75">
+    <circle cx="1320" cy="230" r="84" fill="#00E5FF"/>
+    <circle cx="1225" cy="300" r="72" fill="#8B5CF6"/>
+  </g>
+
+  <g opacity="0.7">
+    <path d="M540 158C730 158 850 124 1024 140C1114 148 1172 174 1236 216" stroke="url(#line)" stroke-width="3" stroke-linecap="round" stroke-dasharray="10 12">
+      <animate attributeName="stroke-dashoffset" values="0;-220" dur="9s" repeatCount="indefinite"/>
+    </path>
+    <path d="M510 248C720 248 858 260 1024 250C1118 244 1168 238 1242 232" stroke="url(#line)" stroke-width="3" stroke-linecap="round" stroke-dasharray="10 12">
+      <animate attributeName="stroke-dashoffset" values="0;-220" dur="8s" repeatCount="indefinite"/>
+    </path>
+    <path d="M540 338C732 338 848 372 1032 356C1112 350 1186 312 1248 252" stroke="url(#line)" stroke-width="3" stroke-linecap="round" stroke-dasharray="10 12">
+      <animate attributeName="stroke-dashoffset" values="0;-220" dur="10s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <g filter="url(#glow)">
+    <circle r="5" fill="#00E5FF">
+      <animateMotion dur="6.6s" repeatCount="indefinite" path="M540 158C730 158 850 124 1024 140C1114 148 1172 174 1236 216"/>
+    </circle>
+    <circle r="4" fill="#8B5CF6">
+      <animateMotion dur="5.4s" repeatCount="indefinite" path="M510 248C720 248 858 260 1024 250C1118 244 1168 238 1242 232"/>
+    </circle>
+    <circle r="5" fill="#00E5FF">
+      <animateMotion dur="7.2s" repeatCount="indefinite" path="M540 338C732 338 848 372 1032 356C1112 350 1186 312 1248 252"/>
+    </circle>
+  </g>
+
+  <g transform="translate(118 118)">
+    <rect x="0" y="0" width="176" height="34" rx="17" fill="#09111F" stroke="#00E5FF" opacity="0.85"/>
+    <text x="20" y="22" fill="#B8F7FF" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="14" letter-spacing="1.2">AI-NATIVE DELIVERY</text>
+
+    <text x="0" y="92" fill="#F8FAFC" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="54" font-weight="700">Reibungslose Bereitstellung</text>
+    <text x="0" y="156" fill="#F8FAFC" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="54" font-weight="700">für das KI-Zeitalter</text>
+    <text x="0" y="206" fill="#9FB2D4" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="22">AI-native platforms, cloud automation, and production-grade deployment flows.</text>
+
+    <g transform="translate(0 248)">
+      <rect x="0" y="0" width="130" height="38" rx="19" fill="#0F172A" stroke="#00E5FF"/>
+      <text x="28" y="24" fill="#D9F8FF" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="15">LLM Ops</text>
+
+      <rect x="146" y="0" width="122" height="38" rx="19" fill="#0F172A" stroke="#8B5CF6"/>
+      <text x="184" y="24" fill="#E9DDFF" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="15">IaC</text>
+
+      <rect x="284" y="0" width="188" height="38" rx="19" fill="#0F172A" stroke="#00E5FF"/>
+      <text x="319" y="24" fill="#D9F8FF" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="15">Zero Downtime</text>
+    </g>
+  </g>
+
+  <g transform="translate(1088 112)">
+    <circle cx="92" cy="146" r="54" fill="#0E1630" opacity="0.86"/>
+    <circle cx="196" cy="102" r="76" fill="#0E1630" opacity="0.86"/>
+    <circle cx="302" cy="162" r="58" fill="#0E1630" opacity="0.86"/>
+    <rect x="70" y="146" width="290" height="112" rx="56" fill="#0E1630" opacity="0.86"/>
+    <path d="M90 258C58 258 32 232 32 200C32 174 50 152 76 146C78 104 114 72 160 72C184 72 206 80 224 96C244 64 280 44 320 44C382 44 432 94 432 156C464 166 488 194 488 228C488 272 452 308 408 308H104C62 308 28 274 28 232" stroke="url(#chip)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+      <animate attributeName="opacity" values="0.82;1;0.82" dur="6s" repeatCount="indefinite"/>
+    </path>
+
+    <g transform="translate(142 100)">
+      <circle cx="98" cy="98" r="94" stroke="#8B5CF6" stroke-opacity="0.36" stroke-width="2" stroke-dasharray="10 10">
+        <animateTransform attributeName="transform" type="rotate" from="0 98 98" to="360 98 98" dur="18s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="98" cy="98" r="70" stroke="#00E5FF" stroke-opacity="0.44" stroke-width="2" stroke-dasharray="6 10">
+        <animateTransform attributeName="transform" type="rotate" from="360 98 98" to="0 98 98" dur="12s" repeatCount="indefinite"/>
+      </circle>
+      <rect x="42" y="42" width="112" height="112" rx="22" fill="#09111F" stroke="url(#chip)" stroke-width="4"/>
+      <rect x="58" y="58" width="80" height="80" rx="16" fill="#0F1B32" stroke="#1F3B65"/>
+      <text x="98" y="95" text-anchor="middle" fill="#E5F3FF" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="28" font-weight="700">AI</text>
+      <text x="98" y="118" text-anchor="middle" fill="#89A3C7" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="13">deploy</text>
+
+      <g stroke="url(#chip)" stroke-width="3" stroke-linecap="round">
+        <path d="M22 66H42"/>
+        <path d="M22 98H42"/>
+        <path d="M22 130H42"/>
+        <path d="M154 66H174"/>
+        <path d="M154 98H174"/>
+        <path d="M154 130H174"/>
+        <path d="M66 22V42"/>
+        <path d="M98 22V42"/>
+        <path d="M130 22V42"/>
+        <path d="M66 154V174"/>
+        <path d="M98 154V174"/>
+        <path d="M130 154V174"/>
+      </g>
+    </g>
+
+    <g transform="translate(44 318)" opacity="0.92">
+      <rect x="0" y="0" width="80" height="58" rx="14" fill="#09111F" stroke="#00E5FF"/>
+      <rect x="94" y="16" width="80" height="58" rx="14" fill="#09111F" stroke="#8B5CF6"/>
+      <rect x="188" y="0" width="80" height="58" rx="14" fill="#09111F" stroke="#00E5FF"/>
+      <path d="M80 30H94" stroke="url(#chip)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M174 46H188" stroke="url(#chip)" stroke-width="3" stroke-linecap="round"/>
+      <text x="40" y="34" text-anchor="middle" fill="#D9F8FF" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="13">build</text>
+      <text x="134" y="50" text-anchor="middle" fill="#E9DDFF" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="13">validate</text>
+      <text x="228" y="34" text-anchor="middle" fill="#D9F8FF" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="13">release</text>
+    </g>
+  </g>
+
+  <g opacity="0.82">
+    <circle cx="1008" cy="104" r="3" fill="#00E5FF">
+      <animate attributeName="opacity" values="0.2;1;0.2" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1060" cy="388" r="4" fill="#8B5CF6">
+      <animate attributeName="opacity" values="1;0.25;1" dur="5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1460" cy="150" r="4" fill="#00E5FF">
+      <animate attributeName="r" values="3;5;3" dur="3.8s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="150" cy="418" r="3" fill="#8B5CF6">
+      <animate attributeName="opacity" values="0.15;0.85;0.15" dur="4.6s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>
