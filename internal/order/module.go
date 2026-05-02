@@ -1,6 +1,6 @@
 package order
 
-import "github.com/go-chi/chi/v5"
+import "net/http"
 
 // Module is the public surface of the order vertical slice.
 // main.go constructs concrete adapters and passes them here;
@@ -18,7 +18,7 @@ func NewModule(write WriteRepository, read ReadRepository) *Module {
 	}
 }
 
-// Mount registers the module's HTTP routes on the provided router.
-func (m *Module) Mount(r chi.Router) {
-	m.handler.Mount(r)
+// Register adds the module's routes to mux.
+func (m *Module) Register(mux *http.ServeMux) {
+	m.handler.Register(mux)
 }

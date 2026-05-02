@@ -3,9 +3,9 @@ package order
 import (
 	"encoding/json"
 	"errors"
+	"log/slog"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 )
 
@@ -21,9 +21,9 @@ func NewHandler(create *CreateOrderHandler, get *GetOrderHandler) *Handler {
 	return &Handler{create: create, get: get}
 }
 
-func (h *Handler) Mount(r chi.Router) {
-	r.Post("/orders", h.handleCreate)
-	r.Get("/orders/{id}", h.handleGet)
+func (h *Handler) Register(mux *http.ServeMux) {
+	mux.HandleFunc("POST /orders", h.handleCreate)
+	mux.HandleFunc("GET /orders/{id}", h.handleGet)
 }
 
 type createRequest struct {
@@ -44,45 +44,27 @@ func (h *Handler) handleCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	customerID, err := uuid.Parse(req.CustomerID)
+	cmd, err := buildCreateOrderCmd(req)
 	if err != nil {
-		respondErr(w, "invalid customer_id", http.StatusBadRequest)
+		respondErr(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	items := make([]Item, 0, len(req.Items))
-	for _, it := range req.Items {
-		pid, err := uuid.Parse(it.ProductID)
-		if err != nil {
-			respondErr(w, "invalid product_id", http.StatusBadRequest)
-			return
-		}
-		items = append(items, Item{
-			ProductID: pid,
-			Quantity:  it.Quantity,
-			UnitPrice: it.UnitPrice,
-		})
-	}
-
-	id := uuid.New()
-	if err := h.create.Handle(r.Context(), CreateOrderCmd{
-		OrderID:    id,
-		CustomerID: customerID,
-		Items:      items,
-	}); err != nil {
-		if errors.Is(err, ErrEmptyCart) {
+	if err := h.create.Handle(r.Context(), cmd); err != nil {
+		if errors.Is(err, ErrEmptyCart) || errors.Is(err, ErrInvalidQuantity) {
 			respondErr(w, err.Error(), http.StatusUnprocessableEntity)
 			return
 		}
+		slog.ErrorContext(r.Context(), "create order", "order_id", cmd.OrderID, "err", err)
 		respondErr(w, "internal error", http.StatusInternalServerError)
 		return
 	}
 
-	respond(w, http.StatusCreated, map[string]string{"id": id.String()})
+	respond(w, http.StatusCreated, map[string]string{"id": cmd.OrderID.String()})
 }
 
 func (h *Handler) handleGet(w http.ResponseWriter, r *http.Request) {
-	id, err := uuid.Parse(chi.URLParam(r, "id"))
+	id, err := uuid.Parse(r.PathValue("id"))
 	if err != nil {
 		respondErr(w, "invalid id", http.StatusBadRequest)
 		return
@@ -94,11 +76,40 @@ func (h *Handler) handleGet(w http.ResponseWriter, r *http.Request) {
 			respondErr(w, "not found", http.StatusNotFound)
 			return
 		}
+		slog.ErrorContext(r.Context(), "get order", "order_id", id, "err", err)
 		respondErr(w, "internal error", http.StatusInternalServerError)
 		return
 	}
 
 	respond(w, http.StatusOK, view)
+}
+
+// buildCreateOrderCmd is a pure function: validates and maps the HTTP request
+// to a command struct with no side effects.
+func buildCreateOrderCmd(req createRequest) (CreateOrderCmd, error) {
+	customerID, err := uuid.Parse(req.CustomerID)
+	if err != nil {
+		return CreateOrderCmd{}, errors.New("invalid customer_id")
+	}
+
+	items := make([]Item, 0, len(req.Items))
+	for _, it := range req.Items {
+		pid, err := uuid.Parse(it.ProductID)
+		if err != nil {
+			return CreateOrderCmd{}, errors.New("invalid product_id")
+		}
+		items = append(items, Item{
+			ProductID: pid,
+			Quantity:  it.Quantity,
+			UnitPrice: it.UnitPrice,
+		})
+	}
+
+	return CreateOrderCmd{
+		OrderID:    uuid.New(),
+		CustomerID: customerID,
+		Items:      items,
+	}, nil
 }
 
 func respond(w http.ResponseWriter, status int, body any) {

@@ -7,14 +7,13 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime/debug"
 	"syscall"
 	"time"
 
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/ThreeDotsLabs/watermill/pubsub/gochannel"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
 	vk "github.com/valkey-io/valkey-go"
 
@@ -25,6 +24,8 @@ import (
 )
 
 func main() {
+	slog.SetDefault(newLogger())
+
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
@@ -66,11 +67,9 @@ func run(ctx context.Context) error {
 	// --- Adapters (implement domain ports) ---
 
 	writeRepo := pgAdapter.NewOrderWriteRepo(pgPool)
-
 	pgReadRepo := pgAdapter.NewOrderReadRepo(pgPool)
 	cachedReadRepo := vkAdapter.NewOrderReadRepo(pgReadRepo, valkeyClient)
 
-	// The projector invalidates the Valkey cache when an order is created.
 	proj := projection.NewOrderProjector(cachedReadRepo)
 	router.AddNoPublisherHandler(
 		"order_cache_invalidation",
@@ -81,17 +80,15 @@ func run(ctx context.Context) error {
 
 	outboxRelay := pgAdapter.NewOutboxRelay(pgPool, pubSub)
 
-	// --- Vertical slices (depend only on domain ports, not concrete adapters) ---
-
-	ordersModule := order.NewModule(writeRepo, cachedReadRepo)
-
 	// --- HTTP ---
 
-	r := chi.NewRouter()
-	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
-	r.Use(middleware.Recoverer)
-	ordersModule.Mount(r)
+	mux := http.NewServeMux()
+	order.NewModule(writeRepo, cachedReadRepo).Register(mux)
+
+	srv := &http.Server{
+		Addr:    cfg.HTTPAddr,
+		Handler: withRecovery(withLogging(mux)),
+	}
 
 	// --- Run ---
 
@@ -100,7 +97,6 @@ func run(ctx context.Context) error {
 	go func() { errCh <- router.Run(ctx) }()
 	go func() { errCh <- outboxRelay.Run(ctx) }()
 
-	srv := &http.Server{Addr: cfg.HTTPAddr, Handler: r}
 	go func() {
 		slog.Info("http server listening", "addr", cfg.HTTPAddr)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -118,6 +114,58 @@ func run(ctx context.Context) error {
 	case err := <-errCh:
 		return err
 	}
+}
+
+// withLogging logs method, path, status and latency for every request.
+func withLogging(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		rw := &responseWriter{ResponseWriter: w, status: http.StatusOK}
+		next.ServeHTTP(rw, r)
+		slog.InfoContext(r.Context(), "request",
+			"method", r.Method,
+			"path", r.URL.Path,
+			"status", rw.status,
+			"duration_ms", time.Since(start).Milliseconds(),
+		)
+	})
+}
+
+// withRecovery converts panics into 500 responses and logs the stack trace.
+func withRecovery(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if v := recover(); v != nil {
+				slog.ErrorContext(r.Context(), "panic recovered",
+					"err", v,
+					"stack", string(debug.Stack()),
+				)
+				http.Error(w, "internal server error", http.StatusInternalServerError)
+			}
+		}()
+		next.ServeHTTP(w, r)
+	})
+}
+
+// responseWriter captures the status code written by handlers.
+type responseWriter struct {
+	http.ResponseWriter
+	status int
+}
+
+func (rw *responseWriter) WriteHeader(code int) {
+	rw.status = code
+	rw.ResponseWriter.WriteHeader(code)
+}
+
+// newLogger returns a JSON logger for production.
+// Set LOG_LEVEL=debug to enable debug output.
+func newLogger() *slog.Logger {
+	opts := &slog.HandlerOptions{Level: slog.LevelInfo}
+	if os.Getenv("LOG_LEVEL") == "debug" {
+		opts.Level = slog.LevelDebug
+	}
+	return slog.New(slog.NewJSONHandler(os.Stdout, opts))
 }
 
 type config struct {

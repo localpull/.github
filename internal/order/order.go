@@ -1,16 +1,9 @@
 package order
 
 import (
-	"errors"
 	"time"
 
 	"github.com/google/uuid"
-)
-
-var (
-	ErrNotFound       = errors.New("order: not found")
-	ErrEmptyCart      = errors.New("order: must have at least one item")
-	ErrInvalidQuantity = errors.New("order: item quantity must be greater than zero")
 )
 
 type Status string
@@ -53,12 +46,4 @@ func New(id, customerID uuid.UUID, items []Item) (Order, error) {
 		Status:     StatusPending,
 		Items:      items,
 	}, nil
-}
-
-// OrderCreated is the domain event written to the outbox on a successful save.
-// Kept in the domain package because it describes a business fact, not infra.
-type OrderCreated struct {
-	OrderID    uuid.UUID `json:"order_id"`
-	CustomerID uuid.UUID `json:"customer_id"`
-	Status     Status    `json:"status"`
 }
