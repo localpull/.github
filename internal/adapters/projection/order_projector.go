@@ -7,7 +7,7 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/google/uuid"
-	vk "github.com/valkey-io/valkey-go"
+	"github.com/localpull/orders/internal/order"
 )
 
 // Invalidator is the subset of the Valkey read repo that the projector needs.
@@ -23,36 +23,25 @@ type Invalidator interface {
 // Simpler and avoids stale writes when events arrive out of order.
 // For write-on-event (materialised view), replace the Del with HSet.
 type OrderProjector struct {
-	cache  Invalidator
-	client vk.Client
+	cache Invalidator
 }
 
-func NewOrderProjector(cache Invalidator, client vk.Client) *OrderProjector {
-	return &OrderProjector{cache: cache, client: client}
-}
-
-type orderCreatedEvent struct {
-	OrderID    string `json:"order_id"`
-	CustomerID string `json:"customer_id"`
-	Status     string `json:"status"`
+func NewOrderProjector(cache Invalidator) *OrderProjector {
+	return &OrderProjector{cache: cache}
 }
 
 // Handler satisfies message.NoPublishHandlerFunc.
+// It reuses order.OrderCreated to stay in sync with the event schema.
 func (p *OrderProjector) Handler(msg *message.Message) error {
-	var evt orderCreatedEvent
+	var evt order.OrderCreated
 	if err := json.Unmarshal(msg.Payload, &evt); err != nil {
-		return err
-	}
-
-	id, err := uuid.Parse(evt.OrderID)
-	if err != nil {
 		// Malformed event: ack and skip rather than requeue forever.
-		slog.Warn("order projector: bad order_id", "payload", string(msg.Payload))
+		slog.Warn("order projector: malformed payload", "payload", string(msg.Payload))
 		msg.Ack()
 		return nil
 	}
 
-	if err := p.cache.Invalidate(msg.Context(), id); err != nil {
+	if err := p.cache.Invalidate(msg.Context(), evt.OrderID); err != nil {
 		return err // nack → Watermill retries
 	}
 	return nil

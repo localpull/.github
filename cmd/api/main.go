@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill/message"
@@ -70,7 +71,7 @@ func run(ctx context.Context) error {
 	cachedReadRepo := vkAdapter.NewOrderReadRepo(pgReadRepo, valkeyClient)
 
 	// The projector invalidates the Valkey cache when an order is created.
-	proj := projection.NewOrderProjector(cachedReadRepo, valkeyClient)
+	proj := projection.NewOrderProjector(cachedReadRepo)
 	router.AddNoPublisherHandler(
 		"order_cache_invalidation",
 		"orders.created",
@@ -94,7 +95,7 @@ func run(ctx context.Context) error {
 
 	// --- Run ---
 
-	errCh := make(chan error, 3)
+	errCh := make(chan error, 2)
 
 	go func() { errCh <- router.Run(ctx) }()
 	go func() { errCh <- outboxRelay.Run(ctx) }()
@@ -110,7 +111,9 @@ func run(ctx context.Context) error {
 	select {
 	case <-ctx.Done():
 		slog.Info("shutting down gracefully")
-		_ = srv.Shutdown(context.Background())
+		shutCtx, shutCancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer shutCancel()
+		_ = srv.Shutdown(shutCtx)
 		return nil
 	case err := <-errCh:
 		return err

@@ -11,21 +11,22 @@ import (
 	"github.com/localpull/orders/internal/order"
 )
 
+var _ order.WriteRepository = (*OrderWriteRepo)(nil)
+
 // OrderWriteRepo implements order.WriteRepository using Postgres.
 // The transactional outbox guarantees that the domain event is only published
 // if the order write succeeds — no two-phase commit required.
 type OrderWriteRepo struct {
-	pool    *pgxpool.Pool
-	queries *db.Queries
+	pool *pgxpool.Pool
 }
 
 func NewOrderWriteRepo(pool *pgxpool.Pool) *OrderWriteRepo {
-	return &OrderWriteRepo{pool: pool, queries: db.New(pool)}
+	return &OrderWriteRepo{pool: pool}
 }
 
 func (r *OrderWriteRepo) Save(ctx context.Context, o order.Order) error {
 	return r.pool.BeginTxFunc(ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
-		q := r.queries.WithTx(tx)
+		q := db.New(tx)
 
 		if err := q.InsertOrder(ctx, db.InsertOrderParams{
 			ID:         o.ID,

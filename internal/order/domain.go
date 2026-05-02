@@ -8,8 +8,9 @@ import (
 )
 
 var (
-	ErrNotFound  = errors.New("order: not found")
-	ErrEmptyCart = errors.New("order: must have at least one item")
+	ErrNotFound       = errors.New("order: not found")
+	ErrEmptyCart      = errors.New("order: must have at least one item")
+	ErrInvalidQuantity = errors.New("order: item quantity must be greater than zero")
 )
 
 type Status string
@@ -36,10 +37,15 @@ type Item struct {
 	UnitPrice int64 // cents
 }
 
-// New enforces the invariant: an order must always have at least one item.
+// New enforces the invariants: at least one item, all quantities positive.
 func New(id, customerID uuid.UUID, items []Item) (Order, error) {
 	if len(items) == 0 {
 		return Order{}, ErrEmptyCart
+	}
+	for _, it := range items {
+		if it.Quantity <= 0 {
+			return Order{}, ErrInvalidQuantity
+		}
 	}
 	return Order{
 		ID:         id,

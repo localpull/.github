@@ -60,7 +60,7 @@ func (r *OutboxRelay) flush(ctx context.Context) error {
 	for _, m := range msgs {
 		msg := message.NewMessage(m.ID.String(), m.Payload)
 		if err := r.publisher.Publish(m.Topic, msg); err != nil {
-			// Stop at first publish error; already-published IDs are still marked.
+			// Mark what was published so far, leave the failed message for next tick.
 			slog.Error("outbox relay: publish failed", "topic", m.Topic, "id", m.ID, "err", err)
 			break
 		}
