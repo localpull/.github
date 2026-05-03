@@ -86,8 +86,11 @@ func run(ctx context.Context) error {
 	order.NewModule(writeRepo, cachedReadRepo).Register(mux)
 
 	srv := &http.Server{
-		Addr:    cfg.HTTPAddr,
-		Handler: withRecovery(withLogging(mux)),
+		Addr:         cfg.HTTPAddr,
+		Handler:      withLogging(withRecovery(mux)),
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  120 * time.Second,
 	}
 
 	// --- Run ---
@@ -150,13 +153,20 @@ func withRecovery(next http.Handler) http.Handler {
 // responseWriter captures the status code written by handlers.
 type responseWriter struct {
 	http.ResponseWriter
-	status int
+	status      int
+	wroteHeader bool
 }
 
 func (rw *responseWriter) WriteHeader(code int) {
+	if rw.wroteHeader {
+		return
+	}
+	rw.wroteHeader = true
 	rw.status = code
 	rw.ResponseWriter.WriteHeader(code)
 }
+
+func (rw *responseWriter) Unwrap() http.ResponseWriter { return rw.ResponseWriter }
 
 // newLogger returns a JSON logger for production.
 // Set LOG_LEVEL=debug to enable debug output.
@@ -176,10 +186,19 @@ type config struct {
 
 func loadConfig() config {
 	return config{
-		PostgresDSN: envOr("POSTGRES_DSN", "postgresql://orders:orders@localhost:5432/orders"),
+		PostgresDSN: requireEnv("POSTGRES_DSN"),
 		ValkeyAddr:  envOr("VALKEY_ADDR", "localhost:6379"),
 		HTTPAddr:    envOr("HTTP_ADDR", ":8080"),
 	}
+}
+
+func requireEnv(key string) string {
+	v, ok := os.LookupEnv(key)
+	if !ok || v == "" {
+		slog.Error("required environment variable not set", "key", key)
+		os.Exit(1)
+	}
+	return v
 }
 
 func envOr(key, fallback string) string {

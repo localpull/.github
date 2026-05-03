@@ -38,6 +38,7 @@ type itemRequest struct {
 }
 
 func (h *Handler) handleCreate(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(w, r.Body, 1<<20) // 1 MiB cap
 	var req createRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respondErr(w, "invalid request body", http.StatusBadRequest)

@@ -1,4 +1,4 @@
-.PHONY: up down run sqlc migrate lint test test/unit
+.PHONY: up down run sqlc migrate lint test test/unit arch vuln
 
 up:
 	docker compose up -d --wait
@@ -24,3 +24,9 @@ test:
 
 test/unit:
 	go test -race -short ./...
+
+arch:
+	go test ./internal/arch/...
+
+vuln:
+	govulncheck ./...

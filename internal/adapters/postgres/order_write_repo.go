@@ -26,7 +26,7 @@ func NewOrderWriteRepo(pool *pgxpool.Pool) *OrderWriteRepo {
 }
 
 func (r *OrderWriteRepo) Save(ctx context.Context, o order.Order) error {
-	if err := r.pool.BeginTxFunc(ctx, pgx.TxOptions{}, func(tx pgx.Tx) error {
+	if err := pgx.BeginTxFunc(ctx, r.pool, pgx.TxOptions{}, func(tx pgx.Tx) error {
 		return insertOrderTx(ctx, db.New(tx), o)
 	}); err != nil {
 		return fmt.Errorf("order.Save %s: %w", o.ID, err)

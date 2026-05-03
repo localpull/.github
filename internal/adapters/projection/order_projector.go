@@ -36,7 +36,7 @@ func (p *OrderProjector) Handler(msg *message.Message) error {
 	var evt order.OrderCreated
 	if err := json.Unmarshal(msg.Payload, &evt); err != nil {
 		// Malformed event: ack and skip rather than requeue forever.
-		slog.Warn("order projector: malformed payload", "payload", string(msg.Payload))
+		slog.Warn("order projector: malformed payload", "payload_size", len(msg.Payload))
 		msg.Ack()
 		return nil
 	}
