@@ -50,6 +50,12 @@ func (r *OrderReadRepo) Invalidate(ctx context.Context, id uuid.UUID) error {
 func (r *OrderReadRepo) getFromCache(ctx context.Context, key string) (order.Order, error) {
 	val, err := r.client.Do(ctx, r.client.B().Get().Key(key).Build()).ToString()
 	if err != nil {
+		// Distinguish a genuine cache miss (key absent) from infrastructure
+		// failures (connection refused, timeout). Only the latter needs a log —
+		// a nil reply is expected on every cold start or after invalidation.
+		if !vk.IsValkeyNil(err) {
+			slog.Warn("valkey: get failed, falling back to origin", "key", key, "err", err)
+		}
 		return order.Order{}, err
 	}
 	var o order.Order

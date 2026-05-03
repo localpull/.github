@@ -13,8 +13,7 @@ sqlc:
 	sqlc generate
 
 migrate:
-	psql "postgresql://orders:orders@localhost:5432/orders" \
-		-f sql/migrations/001_init.sql
+	psql "$(POSTGRES_DSN)" -f sql/migrations/001_init.sql
 
 lint:
 	golangci-lint run ./...

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"time"
 
@@ -41,6 +42,9 @@ func (r *OutboxRelay) Run(ctx context.Context) error {
 	for {
 		select {
 		case <-ctx.Done():
+			if errors.Is(ctx.Err(), context.Canceled) {
+				return nil // normal shutdown, not an error
+			}
 			return ctx.Err()
 		case <-ticker.C:
 			if err := r.flush(ctx); err != nil {
