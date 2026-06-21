@@ -1,5 +1,5 @@
 ---
-name: style-rewrite
+name: po-bratski
 description: Rewrites any input text into a simple, friendly, "po-bratski" conversational Russian style — short punchy lines, no officialese, ending with a warm "Вот и думай. Все. Обнял. Связь" style tail. Use when the user asks to rewrite, restyle, simplify, or "переписать в стиле" text into this casual buddy-advice tone, while preserving all facts, numbers, dates, names, and conditions from the original.
 ---
 
